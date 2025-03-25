@@ -1,0 +1,47 @@
+/* Styles généraux */
+body {
+    background-color: black;
+    color: silver;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Liens */
+a {
+    color: silver;
+    text-decoration: none;
+}
+
+a:hover {
+    color: white;
+}
+
+/* En-tête */
+header {
+    background-color: #222;
+    padding: 20px;
+}
+
+/* Navigation */
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav a {
+    color: silver;
+    margin: 0 15px;
+    font-weight: bold;
+}
+
+/* Footer */
+footer {
+    background-color: #222;
+    color: silver;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+}
+
