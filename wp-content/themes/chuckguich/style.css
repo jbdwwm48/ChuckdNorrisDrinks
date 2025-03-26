@@ -54,4 +54,9 @@ footer {
     height: 100%;
     object-fit: cover;
 }
+.carousel-inner img {
+    max-height: 100px; /* Réduit la hauteur des images */
+    width: 50%; /* Ajuste la largeur */
+}
+
 

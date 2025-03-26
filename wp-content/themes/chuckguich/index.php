@@ -27,9 +27,14 @@
         }
         ?>
     </div>
-
-    <?php echo do_shortcode('[chuck_norris_fact]'); ?>
-
+    <div class='container'>
+        <?php
+        if (is_front_page()) {
+            echo do_shortcode('[chuck_saucisse_simple]');
+        }
+        // Or any other condition
+        ?>
+    </div>
 </main>
 
 <?php get_footer(); ?>

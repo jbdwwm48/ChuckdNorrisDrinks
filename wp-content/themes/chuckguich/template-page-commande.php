@@ -104,30 +104,34 @@ get_header(); ?>
                     if ($the_query->have_posts()) {
                         while ($the_query->have_posts()) {
                             $the_query->the_post();
-
                             // Champs dynamiques pour chaque article
                             $prix = get_field('prix'); // Prix de l'article
                             $taille = get_field('taille'); // Taille ou autre attribut pertinent
                             $id = 'article_' . get_the_ID(); // ID unique basé sur l'ID WordPress
                     ?>
-                            <div class="col-md-3 form-check">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="<?php echo esc_attr($id); ?>"
-                                    name="articles[]"
-                                    value="<?php echo esc_attr(get_the_title()); ?>"
-                                    data-prix="<?php echo esc_attr($prix); ?>">
-                                <label class="form-check-label" for="<?php echo esc_attr($id); ?>">
-                                    <?php echo esc_html(get_the_title()); ?> (<?php echo esc_html($taille); ?> - <?php echo esc_html($prix); ?>€)
-                                </label>
-                                <select id="quantity_<?php echo esc_attr($id); ?>" class="form-select mt-2" disabled>
-                                    <option value="">Quantité</option>
-                                    <?php for ($i = 1; $i <= 10; $i++) : ?>
-                                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                                    <?php endfor; ?>
-                                </select>
-                            </div>
+                           <div class="col-md-3 form-check">
+                            <label class="form-check-label" for="<?php echo esc_attr($id); ?>">
+                                <img 
+                                    src="<?php echo esc_url(get_field('image_principale')); ?>" 
+                                    alt="Image de <?php echo esc_html(get_the_title()); ?>" 
+                                    style="width: 100px; height: 100px; object-fit: cover; display: block; margin: 10px auto;">
+                                <?php echo esc_html(get_the_title()); ?> 
+                                (<?php echo esc_html($taille); ?> - <?php echo esc_html($prix); ?>€)
+                            </label>
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="<?php echo esc_attr($id); ?>"
+                                name="articles[]"
+                                value="<?php echo esc_attr(get_the_title()); ?>"
+                                data-prix="<?php echo esc_attr($prix); ?>">
+                            <select id="quantity_<?php echo esc_attr($id); ?>" class="form-select mt-2" disabled>
+                                <option value="">Quantité</option>
+                                <?php for ($i = 1; $i <= 10; $i++) : ?>
+                                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
                     <?php
                         } // Fin de la boucle
                     } else {
@@ -164,19 +168,19 @@ get_header(); ?>
                 <p>Choisissez votre point de retrait sur la carte :</p>
                 <div id="map"></div>
             </section>
-
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
             <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    // Initialisation de la carte
-                    const map = L.map('map').setView([48.8566, 2.3522], 12);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors',
-                    }).addTo(map);
-                    L.marker([48.8566, 2.3522]).addTo(map)
-                        .bindPopup('Votre point Click & Collect')
-                        .openPopup();
+                    document.addEventListener("DOMContentLoaded", function() {
+                        // Initialisation de la carte
+                        const map = L.map('map').setView([44.518, 3.501], 12);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors',
+                        }).addTo(map);
+                        L.marker([44.518, 3.501]).addTo(map)
+                            .bindPopup('Pépinière d\'entreprises POLeN')
+                            .openPopup();
+
 
                     // Gestion des cases à cocher et des sélecteurs de quantité
                     const checkboxes = document.querySelectorAll('.form-check-input');
