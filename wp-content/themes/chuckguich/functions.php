@@ -11,5 +11,12 @@ add_action('after_setup_theme', 'mon_theme_setup');
 function mon_theme_enqueue_scripts() {
     wp_enqueue_style('style', get_stylesheet_uri());
     wp_enqueue_script('script', get_template_directory_uri() . '/js/script.js', array('jquery'), null, true);
+    wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css');
+    wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), null, true);
+    wp_enqueue_script('custom-carousel', get_template_directory_uri() . '/js/carousel.js', array('swiper-js'), null, true);
+
+
 }
 add_action('wp_enqueue_scripts', 'mon_theme_enqueue_scripts');
+
+
