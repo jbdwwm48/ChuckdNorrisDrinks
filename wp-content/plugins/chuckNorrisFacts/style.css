@@ -1,0 +1,23 @@
+.chuck-fact-box {
+    background: #f6fbfb;
+    border: 2px solid #bc040d;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    max-width: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chuck-fact-header {
+    background: #bc040d;
+    color: #f6fbfb;
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    margin: -1rem -1rem 1rem -1rem;
+}
+
+.chuck-fact-content {
+    font-style: italic;
+    color: #0d0c0f;
+}

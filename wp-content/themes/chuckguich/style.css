@@ -1,62 +1,384 @@
-/* Styles généraux */
+/*
+Theme Name: Chuck Guich
+Description: Thème personnalisé pour Chuck Saucisse
+Author: xAI
+Version: 1.0.0
+*/
+
+/* Styles généraux - Mobile First */
 body {
-    background-color: rgb(235, 226, 226);
-    color: silver;
+    background-color: #f6fbfb; /* Blanc */
+    color: #0d0c0f; /* Noir */
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Liens */
 a {
-    color: silver;
+    color: #bc040d; /* Rouge */
     text-decoration: none;
 }
 
 a:hover {
-    color: white;
+    color: #5f5b59; /* Gris foncé */
 }
 
-/* En-tête */
-header {
-    background-color: #222;
-    padding: 20px;
+/* Header */
+.navbar {
+    background-color: #0d0c0f; /* Noir */
 }
 
-/* Navigation */
-nav ul {
-    list-style-type: none;
-    padding: 0;
+.navbar-brand, .navbar-nav .nav-link {
+    color: #f6fbfb; /* Blanc */
 }
 
-nav a {
-    color: silver;
-    margin: 0 15px;
-    font-weight: bold;
+.navbar-nav .nav-link:hover {
+    color: #bc040d; /* Rouge */
+}
+
+.carousel-inner img {
+    max-height: 200px;
+    object-fit: cover;
 }
 
 /* Footer */
-footer {
-    background-color: #222;
-    color: silver;
-    text-align: center;
-    padding: 10px;
-    width: 100%;
-    position: relative;  /* Position dans le flux normal du document */
-}
-.swiper {
-    width: 100%;
-    height: 400px;
+.site-footer {
+    background-color: #0d0c0f; /* Noir */
+    color: #b7bcb6; /* Gris clair */
+    padding: 1rem;
 }
 
-.swiper-slide img {
+.footer-container a {
+    color: #f6fbfb; /* Blanc */
+}
+
+.footer-container a:hover {
+    color: #bc040d; /* Rouge */
+}
+
+/* Pages */
+.single-post, .single-drink {
+    background: #f6fbfb; /* Blanc */
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Commande - Mobile First */
+.order-page {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.order-page .container {
+    max-width: 1200px;
+}
+
+.order-page .row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.order-page .col-12,
+.order-page .col-md-6 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.commande-title {
+    color: #bc040d; /* Rouge */
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+}
+
+.product-card {
+    border: none;
+    border-radius: 10px;
+    background: #f6fbfb; /* Blanc */
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.product-thumbnail {
+    width: 100%;
+    height: 150px; /* Miniature en mobile */
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.price-text {
+    color: #bc040d; /* Rouge */
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.quantity-input {
+    border: 2px solid #b7bcb6; /* Gris clair */
+}
+
+.quantity-input:focus {
+    border-color: #bc040d; /* Rouge */
+    box-shadow: 0 0 5px rgba(188, 4, 13, 0.3);
+}
+
+.order-summary {
+    border-radius: 10px;
+    background: #f6fbfb; /* Blanc */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary .card-header {
+    background: #bc040d; /* Rouge */
+    color: #f6fbfb; /* Blanc */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.order-recap {
+    background: #b7bcb6; /* Gris clair */
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.store-info {
+    background: #f6fbfb; /* Blanc */
+    border: 1px solid #b7bcb6; /* Gris clair */
+    border-radius: 10px;
+}
+
+.store-title {
+    color: #bc040d; /* Rouge */
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.btn-chuck-red {
+    background-color: #bc040d; /* Rouge */
+    color: #f6fbfb; /* Blanc */
+    border: none;
+}
+
+.btn-chuck-red:hover {
+    background-color: #5f5b59; /* Gris foncé */
+    color: #f6fbfb;
+}
+
+/* Sticky Column pour Desktop */
+.sticky-col {
+    position: static; /* Mobile par défaut */
+}
+
+@media (min-width: 768px) {
+    .sticky-col {
+        position: sticky;
+        top: 20px;
+        height: fit-content; /* S’adapte au contenu */
+    }
+}
+
+/* Reviews */
+.reviews-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.review-card {
+    background: #f6fbfb; /* Blanc */
+    border-radius: 10px;
+    padding: 1rem;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+}
+
+.review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.review-stars {
+    color: #ffc107;
+}
+
+/* Email */
+.email-container {
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #0d0c0f; /* Noir */
+}
+
+.email-header {
+    background: #bc040d; /* Rouge */
+    padding: 1.5rem;
+    text-align: center;
+    color: #f6fbfb; /* Blanc */
+}
+
+.email-content {
+    padding: 1.5rem;
+    background: #f6fbfb; /* Blanc */
+}
+
+.email-summary {
+    margin-top: 1rem;
+    border-top: 1px solid #b7bcb6; /* Gris clair */
+    padding-top: 1rem;
+}
+
+.wpforms-submit {
+    background-color: #bc040d; /* Rouge */
+    color: #f6fbfb; /* Blanc */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.wpforms-submit:hover {
+    background-color: #5f5b59; /* Gris foncé */
+    color: #f6fbfb;
+}
+
+.wpforms-field input,
+.wpforms-field textarea {
+    border: 2px solid #b7bcb6; /* Gris clair */
+}
+
+.wpforms-field input:focus,
+.wpforms-field textarea:focus {
+    border-color: #bc040d; /* Rouge */
+    box-shadow: 0 0 5px rgba(188, 4, 13, 0.3);
+}
+
+/* CTA Hero avec graphisme CSS */
+.cta-hero {
+    position: relative;
+    background: linear-gradient(135deg, #bc040d 0%, #0d0c0f 100%); /* Dégradé rouge à noir */
+    max-height: 250px; /* Plus de hauteur en mobile */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    overflow: hidden;
+    background-repeat: no-repeat; /* Pas de répétition */
+    background-size: cover;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Filtre opaque noir à 70% */
+.cta-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-}
-.carousel-inner img {
-    max-height: 100px; /* Réduit la hauteur des images */
-    width: 50%; /* Ajuste la largeur */
+    background: rgba(0, 0, 0, 0.7); /* Filtre noir 70% */
+    z-index: 1;
 }
 
+.cta-overlay {
+    position: relative;
+    z-index: 2; /* Au-dessus du filtre */
+    padding: 1.5rem; /* Moins haut */
+    color: #f6fbfb; /* Police blanche */
+    width: 100%;
+}
 
+.cta-title {
+    font-size: 1.25rem; /* Réduit en mobile */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #f6fbfb; /* Blanc */
+}
+
+.cta-text {
+    font-size: 0.75rem; /* Réduit en mobile */
+    color: #f6fbfb; /* Blanc */
+}
+
+.btn-chuck-red {
+    background-color: #bc040d; /* Rouge */
+    color: #f6fbfb; /* Blanc */
+    border: none;
+    font-size: 0.75rem; /* Réduit en mobile */
+    padding: 0.5rem 1.5rem; /* Plus petit */
+}
+
+.btn-chuck-red:hover {
+    background-color: #5f5b59; /* Gris foncé */
+    color: #f6fbfb;
+}
+
+.chuck-promo {
+    color: #f6fbfb; /* Blanc */
+    font-size: 0.625rem; /* Réduit en mobile */
+    line-height: 1.2;
+}
+
+.chuck-promo b {
+    color: #bc040d; /* Rouge */
+    font-size: 0.75rem; /* Réduit en mobile */
+}
+
+/* Media Queries pour Desktop */
+@media (min-width: 768px) {
+    .carousel-inner img {
+        max-height: 300px;
+    }
+
+    .single-post, .single-drink {
+        padding: 2rem;
+    }
+
+    .commande-title {
+        font-size: 2rem;
+    }
+
+    .product-thumbnail {
+        height: 200px; /* Plus grand en desktop */
+    }
+
+    .cta-hero {
+        max-height: 220px; /* Retour à 220px en desktop */
+    }
+
+    .cta-title {
+        font-size: 2rem;
+    }
+
+    .cta-text {
+        font-size: 1rem;
+    }
+
+    .btn-chuck-red {
+        font-size: 1rem;
+        padding: 0.75rem 2rem; /* Taille normale en desktop */
+    }
+
+    .chuck-promo {
+        font-size: 0.875rem;
+    }
+
+    .chuck-promo b {
+        font-size: 1rem;
+    }
+}

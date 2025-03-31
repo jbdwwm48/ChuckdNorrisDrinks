@@ -1,256 +1,156 @@
 <?php
 /**
- * Template Name: commande-templet
- * Description: page de commende
+ * Template Name: Commande Click & Collect
  */
-require(get_template_directory() . '/email.php');
-get_header(); ?>
+get_header();
 
-<main>
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
+    require_once(get_template_directory() . '/process-order.php');
+}
+
+$args = array(
+    'post_type' => 'drinks',
+    'meta_query' => array(
+        array(
+            'key' => 'stock',
+            'value' => 0,
+            'compare' => '>'
+        )
+    )
+);
+$drinks_query = new WP_Query($args);
+?>
+
+<div class="order-page py-5">
+    <?php if (isset($order_success)) : ?>
+        <div class="container">
+            <div class="alert alert-success commande-alert">
+                <h4>Merci <?php echo esc_html($order_data['first_name']); ?> !</h4>
+                <p>Votre commande a bien été enregistrée.</p>
+            </div>
+        </div>
+    <?php elseif (isset($order_error)) : ?>
+        <div class="container">
+            <div class="alert alert-danger commande-alert">
+                <?php echo esc_html($order_error); ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="container">
-        <h1><?php the_title(); ?></h1>
+        <form method="POST" id="orderForm">
+            <div class="row">
+                <!-- Produits : Mobile (1 colonne), Desktop (moitié gauche) -->
+                <div class="col-12 col-md-6">
+                    <h1 class="mb-4 commande-title"><?php the_title(); ?></h1>
+                    <div class="row">
+                        <?php while ($drinks_query->have_posts()) : $drinks_query->the_post(); ?>
+                            <div class="col-12 col-md-6 mb-4">
+                                <div class="card h-100 product-card">
+                                    <div class="card-img-top">
+                                        <?php if (has_post_thumbnail()) : ?>
+                                            <?php the_post_thumbnail('thumbnail', ['class' => 'product-thumbnail']); ?>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php the_title(); ?></h5>
+                                        <p class="text-muted"><?php echo get_field('contenance'); ?></p>
+                                        <p class="price-text"><?php echo get_field('prix'); ?>€</p>
+                                        <div class="input-group mt-3">
+                                            <input type="number" 
+                                                name="products[<?php echo get_the_ID(); ?>][quantity]" 
+                                                class="form-control quantity-input" 
+                                                min="0" 
+                                                max="<?php echo get_field('stock'); ?>"
+                                                data-price="<?php echo get_field('prix'); ?>"
+                                                value="0">
+                                            <input type="hidden" 
+                                                name="products[<?php echo get_the_ID(); ?>][price]" 
+                                                value="<?php echo get_field('prix'); ?>">
+                                        </div>
+                                        <small class="text-muted stock-info"><?php echo get_field('stock'); ?> en stock</small>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endwhile; wp_reset_postdata(); ?>
+                    </div>
+                </div>
 
-        <?php
-    $args = array(
-        'post_type' => "drinks"
-    );
-    // The Query.
-    $the_query = new WP_Query($args);
-
-    // Restore original Post Data.
-    wp_reset_postdata();
-    ?>
-        <div class="content">
-            <?php
-            if (have_posts()) :
-                while (have_posts()) : the_post();
-                    the_content();
-                endwhile;
-            else :
-                echo '<p>Aucun contenu trouvé.</p>';
-            endif;
-            ?>
-        </div>
-    </div>
-</main>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: #000;
-            color: white;
-        }
-        .header {
-            background-color: #555;
-            text-align: center;
-            padding: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .cart-container {
-            background-color: black;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .form-container {
-            background-color: #555;
-            padding: 20px;
-            border: 1px solid white;
-        }
-        .click-collect {
-            background-color: #555;
-            text-align: center;
-            padding: 20px;
-        }
-        .total-and-button {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .total {
-            font-weight: bold;
-            color: white;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .total span {
-            display: inline-block;
-        }
-        #map {
-            width: 100%;
-            height: 200px;
-            background: #ccc;
-            border: 1px solid white;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <h1>Mon Click & Collect</h1>
-    </header>
-    <section class="cart-container">
-        <div class="form-container">
-            <h2 class="fw-bold">Formulaire Click & Collect</h2>
-        <!-- Produits commandables -->
-        <form id="collectForm" method="POST">
-                <div id="articleSelection" class="row">
-                    <p class="col-12">Choisissez vos articles :</p>
-                    <?php
-                    if ($the_query->have_posts()) {
-                        while ($the_query->have_posts()) {
-                            $the_query->the_post();
-                            // Champs dynamiques pour chaque article
-                            $prix = get_field('prix'); // Prix de l'article
-                            $taille = get_field('taille'); // Taille ou autre attribut pertinent
-                            $id = 'article_' . get_the_ID(); // ID unique basé sur l'ID WordPress
-                    ?>
-                           <div class="col-md-3 form-check">
-                            <label class="form-check-label" for="<?php echo esc_attr($id); ?>">
-                                <img 
-                                    src="<?php echo esc_url(get_field('image_principale')); ?>" 
-                                    alt="Image de <?php echo esc_html(get_the_title()); ?>" 
-                                    style="width: 100px; height: 100px; object-fit: cover; display: block; margin: 10px auto;">
-                                <?php echo esc_html(get_the_title()); ?> 
-                                (<?php echo esc_html($taille); ?> - <?php echo esc_html($prix); ?>€)
-                            </label>
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="<?php echo esc_attr($id); ?>"
-                                name="articles[]"
-                                value="<?php echo esc_attr(get_the_title()); ?>"
-                                data-prix="<?php echo esc_attr($prix); ?>">
-                            <select id="quantity_<?php echo esc_attr($id); ?>" class="form-select mt-2" disabled>
-                                <option value="">Quantité</option>
-                                <?php for ($i = 1; $i <= 10; $i++) : ?>
-                                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                                <?php endfor; ?>
-                            </select>
+                <!-- Colonne droite : Mobile (1 colonne), Desktop (moitié droite, sticky) -->
+                <div class="col-12 col-md-6 sticky-col">
+                    <!-- Votre commande -->
+                    <div class="card shadow order-summary mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Votre commande</h5>
                         </div>
-                    <?php
-                        } // Fin de la boucle
-                    } else {
-                        echo '<p>Aucun article disponible.</p>';
-                    }
-                    ?>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Informations</label>
+                                <input type="text" name="first_name" class="form-control mb-2" placeholder="Prénom" required>
+                                <input type="text" name="last_name" class="form-control mb-2" placeholder="Nom" required>
+                                <input type="email" name="email" class="form-control" placeholder="Email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Code promo</label>
+                                <div class="input-group">
+                                    <input type="text" id="promoCode" name="promo_code" class="form-control">
+                                    <button type="button" id="applyPromo" class="btn btn-outline-danger">Appliquer</button>
+                                </div>
+                                <small id="promoMessage" class="form-text"></small>
+                                <input type="hidden" id="discountType" name="discount_type">
+                                <input type="hidden" id="discountValue" name="discount_value">
+                            </div>
+
+                            <div class="mb-3 order-recap">
+                                <h6>Récapitulatif</h6>
+                                <div class="d-flex justify-content-between">
+                                    <span>Total HT :</span>
+                                    <span id="subtotal">0.00€</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>TVA (20%) :</span>
+                                    <span id="tax">0.00€</span>
+                                </div>
+                                <div id="beforeDiscountRow" class="d-none d-flex justify-content-between">
+                                    <span>Total avant réduction :</span>
+                                    <span id="totalBeforeDiscount">0.00€</span>
+                                </div>
+                                <div id="discountRow" class="d-none discount-row">
+                                    <span>Réduction :</span>
+                                    <span id="discountAmount">-0.00€</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold total-row">
+                                    <span>Total TTC :</span>
+                                    <span id="total">0.00€</span>
+                                </div>
+                            </div>
+
+                            <?php wp_nonce_field('submit_order', 'order_nonce'); ?>
+                            <input type="hidden" name="submit_order" value="1">
+                            <button type="submit" class="btn btn-danger w-100 py-2 submit-btn">
+                                <i class="fas fa-check-circle me-2"></i>Valider la commande
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Retrait en magasin -->
+                    <div class="store-info p-4 rounded">
+                        <h3 class="store-title">Retrait en magasin</h3>
+                        <?php echo do_shortcode('[leaflet-map lat=44.52814856454269 lng=3.4766571204239853 zoom=12]'); ?>
+                        <h4 class="mt-3">Horaires :</h4>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-clock me-2"></i> Lundi - Vendredi : 9h-12h / 14h-18h</li>
+                            <li><i class="fas fa-clock me-2"></i> Samedi : 9h-12h</li>
+                        </ul>
+                        <h4 class="mt-3">Adresse :</h4>
+                        <p>Pépinière d'entreprises POLeN<br>Rue Albert Einstein, 48000 Mende</p>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
+</div>
 
-    <!-- Données clients -->
-    <div class="mt-3">
-        <label for="firstName" class="form-label">Prénom :</label>
-        <input type="text" id="firstName" class="form-control" required />
-        <label for="lastName" class="form-label">Nom :</label>
-        <input type="text" id="lastName" class="form-control" required />
-        <label for="email" class="form-label">Email :</label>
-        <input type="email" id="email" class="form-control" required />
-    </div>
-
-    <!-- Résumé commande à côté du bouton Valider -->
-    <div class="total-and-button mt-4">
-        <button type="button" id="validateButton" class="btn btn-light">Valider la commande</button>
-        <div class="total">
-            <span>Prix HT : <span id="priceHT">0€</span></span>
-            <span>TVA (20%) : <span id="priceTVA">0€</span></span>
-            <span>Prix TTC : <span id="priceTTC">0€</span></span>
-            <span>Total : <span id="total">0€</span></span>
-        </div>
-    </div>
-</form>
-
-<!-- Carte Click & Collect -->
-<section class="click-collect">
-    <h2 class="fw-bold">Click & Collect</h2>
-    <p>Choisissez votre point de retrait sur la carte :</p>
-    <p>adresse : Pépinière d'entreprises POLeNRue Albert Einstein,48000 Mende</p>
-    <div id="map"></div>
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Initialisation de la carte
-        const map = L.map('map').setView([44.5201, 3.5019], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-        }).addTo(map);
-        L.marker([44.5201, 3.5019]).addTo(map)
-            .bindPopup('Votre point Click & Collect')
-            .openPopup();
-
-        // Gestion des cases à cocher et des sélecteurs de quantité
-        const checkboxes = document.querySelectorAll('.form-check-input');
-
-        // Fonction pour mettre à jour les totaux
-        const updateSummary = () => {
-            let totalHT = 0;
-            const totalTVA_rate = 0.2; // Taux de TVA
-
-            checkboxes.forEach((checkbox) => {
-                if (checkbox.checked) {
-                    const quantitySelect = document.getElementById(`quantity_${checkbox.id}`);
-                    const prixHT = parseFloat(checkbox.dataset.prix) || 0; // Lire le prix HT depuis l'attribut data-prix
-                    const quantity = parseInt(quantitySelect.value) || 0;
-
-                    if (quantity > 0) {
-                        totalHT += prixHT * quantity;
-                    }
-                }
-            });
-
-            // Calcul TVA et Total TTC
-            const totalTVA = totalHT * totalTVA_rate;
-            const totalTTC = totalHT + totalTVA;
-
-            // Mise à jour de l'affichage des totaux
-            document.getElementById("priceHT").textContent = totalHT.toFixed(2) + "€";
-            document.getElementById("priceTVA").textContent = totalTVA.toFixed(2) + "€";
-            document.getElementById("priceTTC").textContent = totalTTC.toFixed(2) + "€";
-            document.getElementById("total").textContent = totalTTC.toFixed(2) + "€";
-        };
-
-        // Activer/Désactiver les sélecteurs de quantité et mettre à jour les totaux
-        checkboxes.forEach((checkbox) => {
-            const quantitySelect = document.getElementById(`quantity_${checkbox.id}`);
-            checkbox.addEventListener('change', () => {
-                quantitySelect.disabled = !checkbox.checked; // Activer ou désactiver le menu déroulant
-                if (!checkbox.checked) {
-                    quantitySelect.value = ""; // Réinitialise si décoché
-                }
-                updateSummary(); // Met à jour les totaux
-            });
-
-            // Écouter les changements dans les sélecteurs de quantité
-            quantitySelect.addEventListener('change', updateSummary);
-        });
-
-        // Initialiser les totaux
-        updateSummary();
-
-        // Validation du formulaire
-        const validateButton = document.getElementById("validateButton");
-        validateButton.addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-
-            if (!email || !firstName || !lastName) {
-                alert("Merci de remplir tous les champs requis avant de valider !");
-                return;
-            }
-
-            const confirmed = confirm("Confirmez-vous l'envoi de votre commande ?");
-            if (confirmed) {
-                alert(`Votre commande a été validée ! Un email récapitulatif sera envoyé à : ${email}`);
-            }
-        });
-    });
-</script>
 <?php get_footer(); ?>
